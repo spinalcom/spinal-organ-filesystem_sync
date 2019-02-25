@@ -1,0 +1,24 @@
+{
+  spinalConnector: {
+    user: 168, // user id - process.env.SPINAL_USER_ID
+    password: "JHGgcz45JKilmzknzelf65ddDadggftIO98P", // user password - process.env.SPINAL_USER_ID 
+    host: "localhost", // can be an ip address - process.env.SPINALHUB_IP
+    port: 7777 // port - process.env.SPINALHUB_PORT
+  },
+  fsServeServer: {
+    listenHost: '0.0.0.0',
+    port: 7780
+  },
+  path: [{
+    realPath: '.',
+    virtualPath: '/__users__/admin/filesystem_sync/dsadsa',
+    ignore: ['**/node_modules'],
+    fsHostOrigin: "http://localhost:7780"
+  },
+  // {
+  //   realPath: '../spinal-lib-forgefile',
+  //   ignore: ['**/node_modules', "**/.*"],
+  //   virtualPath: '/__users__/admin/filesystem_sync2',
+  // }
+  ]
+}
