@@ -14,14 +14,15 @@
   "license": "ISC",
   "dependencies": {
     "@types/express": "^4.16.1",
+    "@types/express-fileupload": "^0.4.0",
     "@types/lodash.throttle": "^4.1.5",
     "chokidar": "^2.1.2",
     "express": "^4.16.4",
+    "express-fileupload": "^1.1.1-alpha.3",
     "fs-extra": "^7.0.1",
     "json5": "^2.1.0",
     "lodash.throttle": "^4.1.1",
     "q": "^1.5.1",
-    "save": "^2.3.3",
     "spinal-core-connectorjs_type": "git+https://github.com/spinalcom/spinal-core-connectorjs_type.git"
   },
   "devDependencies": {

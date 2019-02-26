@@ -30,7 +30,7 @@ import FsServeFileServer from './FsServeFileServer';
 type spinalDirectory = spinal.Directory<spinal.File<any>>;
 
 const fsServeFileServer = new FsServeFileServer(
-    config.fsServeServer.listenHost, config.fsServeServer.port);
+    config.fsServeServer.listenHost, config.fsServeServer.port, config.fsServeServer.tmpFolder);
 
 const folders = config.path.map((elem: any) => {
   return {

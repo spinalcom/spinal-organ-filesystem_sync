@@ -245,7 +245,7 @@ export class SpinalFsSync {
 
   async handleRealChange() {
     const filesAndFolders = this.getFilesAndFolers();
-    // console.log(filesAndFolders);
+    console.log(filesAndFolders);
 
     for (const folderPath in filesAndFolders) {
       if (filesAndFolders.hasOwnProperty(folderPath)) {

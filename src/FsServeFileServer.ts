@@ -23,17 +23,24 @@
  */
 
 import express = require('express');
+import expressFileupload = require('express-fileupload');
 import * as path from 'path';
 
 export class FsServeFileServer {
   app: express.Application;
   listenHost: string;
   port: number;
+  tmpFolder: string;
 
-  constructor(listenHost: string, port: string|number) {
+  constructor(listenHost: string, port: string|number, tmpFolder: string) {
     this.listenHost = listenHost;
+    this.tmpFolder = tmpFolder;
     this.port = typeof port === 'string' ? parseInt(port, 10) : port;
     this.app = express();
+    this.app.use(expressFileupload({
+      useTempFiles: true,
+      tempFileDir: path.resolve(tmpFolder),
+    }));
   }
 
   init(folders: any[]) {
@@ -48,6 +55,50 @@ export class FsServeFileServer {
         }
       }
       res.sendStatus(404);
+    });
+
+    this.app.post('/upload/:file', (req, res) => {
+      const file: string = req.params.file;
+      const files = Object.keys(req.files);
+      if (files.length === 0) {
+        return res.status(400).send('No files were uploaded.');
+      }
+      const resPromise: Promise<void>[] = [];
+      for (let idx = 0; idx < files.length; idx += 1) {
+        const f = files[idx];
+        for (const dir of folders) {
+          if (file.startsWith(dir.virtualPath)) {
+            let relpath = file.slice(dir.virtualPath.length);
+            if (relpath.startsWith('/')) relpath = relpath.slice(1);
+            const realPath = path.resolve(
+                dir.realPath, relpath,
+                (<expressFileupload.UploadedFile>(req.files[f])).name);
+            resPromise.push(
+                new Promise((resolve, reject) => {
+                  (<expressFileupload.UploadedFile>(req.files[f]))
+                      .mv(realPath, (err) => {
+                        if (err) {
+                          reject(err);
+                        }
+                        resolve();
+                      });
+                }),
+            );
+          }
+        }
+      }
+      if (resPromise.length > 0) {
+        Promise.all(resPromise)
+            .then(
+                () => {
+                  res.status(200).send('File uploaded!');
+                },
+                (err) => {
+                  return res.status(500).send(err);
+                });
+      } else {
+        res.sendStatus(404);
+      }
     });
   }
 
