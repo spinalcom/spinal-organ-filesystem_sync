@@ -91,6 +91,7 @@ export class FsServeFileServer {
         Promise.all(resPromise)
             .then(
                 () => {
+                  res.header('Access-Control-Allow-Origin', '*');
                   res.status(200).send('File uploaded!');
                 },
                 (err) => {

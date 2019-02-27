@@ -7,14 +7,14 @@
   },
   fsServeServer: {
     listenHost: '0.0.0.0',
-    port: 7780,
+    port: 7789,
     tmpFolder: 'tmp_files'
   },
   path: [{
     realPath: '.',
     virtualPath: '/__users__/admin/filesystem_sync/dsadsa',
     ignore: ['**/node_modules', "**/.*"],
-    fsHostOrigin: "http://localhost:7780"
+    fsHostOrigin: "http://localhost:7789"
   },
   // {
   //   realPath: '../spinal-lib-forgefile',

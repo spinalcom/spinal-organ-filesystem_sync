@@ -22,8 +22,8 @@
  * <http://resources.spinalcom.com/licenses.pdf>.
  */
 import * as chokidar from 'chokidar';
-import * as path from 'path';
 import * as fs from 'fs';
+import * as path from 'path';
 import { Directory, FileSystem, Str } from 'spinal-core-connectorjs_type';
 
 import { HttpPath } from './Model/HttpPath';
@@ -84,8 +84,7 @@ export class SpinalFsSync {
             files
                 .filter((file: string) => {
                   return this.existInFolderPath(
-                             watchedPaths, path.resolve(folderPath, file)) ===
-                      false;
+                             watchedPaths, path.resolve(folderPath, file)) === false;
                 })
                 .map((file) => {
                   return path.relative(
@@ -139,18 +138,31 @@ export class SpinalFsSync {
             if (typeof element._info.synchronised === 'undefined') {
               element._info.mod_attr('synchronised', true);
             }
+            if (typeof element._info.host === 'undefined' ||
+                element._info.host.get() !== this.host.get()) {
+              element._info.mod_attr('host', this.host);
+            }
           }
-
           return resolve(dir);
         }
       }
       const dir: spinalDirectory = new Directory();
-      let info: {icon: string, model_type: string, synchronised?: boolean};
+      let info: {
+        icon: string,
+        model_type: string,
+        synchronised?: boolean,
+        host?: spinal.Str,
+      };
       if (relFolderPath.length >= 2 && relFolderPath[0] === '.' &&
           relFolderPath[1] === '.') {
         info = { icon: 'folder', model_type: 'Directory' };
       } else {
-        info = { icon: 'folder', model_type: 'Directory', synchronised: true };
+        info = {
+          icon: 'folder',
+          model_type: 'Synchronized Directory',
+          synchronised: true,
+          host: this.host,
+        };
       }
       parent.add_file(target, dir, info);
       return resolve(dir);
@@ -160,18 +172,19 @@ export class SpinalFsSync {
   getFileInFolder(dir: spinalDirectory, fileStat: fs.Stats): spinal.File<any> {
     for (let idx = 0; idx < dir.length; idx += 1) {
       const file = dir[idx];
-      if (
-        typeof file._info.dev !== 'undefined' && file._info.dev.get() === fileStat.dev &&
-        typeof file._info.ino !== 'undefined' && file._info.ino.get() === fileStat.ino
-      ) {
+      if (typeof file._info.dev !== 'undefined' &&
+          file._info.dev.get() === fileStat.dev &&
+          typeof file._info.ino !== 'undefined' &&
+          file._info.ino.get() === fileStat.ino) {
         return file;
       }
     }
     return null;
   }
 
-  async updateFolderFiles(dir: spinalDirectory, files: string[], folderPath: string,
-                          folderPathInSpinal: {[folderPathInSpinal: string]: string[]}) {
+  async updateFolderFiles(
+      dir: spinalDirectory, files: string[], folderPath: string,
+      folderPathInSpinal: {[folderPathInSpinal: string]: string[]}) {
     const fileSet: Set<{dev: number, ino: number}> = new Set();
     for (const fileName of files) {
       let httpPath: HttpPath;
@@ -184,13 +197,16 @@ export class SpinalFsSync {
         ino: fileStat.ino,
       });
       if (file === null) {
-        httpPath =
-            new HttpPath(fName, this.folderRootPathInSpinal, this.host, fileStat.dev, fileStat.ino);
-        dir.add_file(
-          <any>httpPath.httpPath, httpPath, { model_type: 'HttpPath', synchronised: true,
-            dev: httpPath.dev, ino: httpPath.ino });
+        httpPath = new HttpPath(
+            fName, this.folderRootPathInSpinal, this.host, fileStat.dev,
+            fileStat.ino);
+        dir.add_file(<any>httpPath.httpPath, httpPath, {
+          model_type: 'HttpPath',
+          synchronised: true,
+          dev: httpPath.dev,
+          ino: httpPath.ino,
+        });
       } else {
-
         httpPath = await this.loadFile(file);
         if (httpPath instanceof HttpPath && typeof file._info !== 'undefined' &&
             typeof file._info.model_type !== 'undefined' &&
@@ -198,7 +214,8 @@ export class SpinalFsSync {
           if (httpPath.httpPath.get() !== fName) {
             httpPath.httpPath.set(fName);
           }
-          if (httpPath.httpRootPath.get() !== this.folderRootPathInSpinal.get()) {
+          if (httpPath.httpRootPath.get() !==
+              this.folderRootPathInSpinal.get()) {
             httpPath.httpRootPath.set(this.folderRootPathInSpinal);
           }
           if (typeof httpPath.host === 'undefined') {
@@ -210,18 +227,19 @@ export class SpinalFsSync {
         }
       }
     }
-    const fNames = files.map(fileName => path.basename(fileName)) ;
-
     for (let idx = 0; idx < dir.length; idx += 1) {
       const file = dir[idx];
       if (file._info.model_type.get() === 'HttpPath') {
-        if (this.fileSetHasFile(file._info.dev.get(), file._info.ino.get(), fileSet) === false) {
+        if (this.fileSetHasFile(
+                file._info.dev.get(), file._info.ino.get(), fileSet) ===
+            false) {
           dir.remove_ref(file);
           idx = -1;
         }
-      } else if (file._info.model_type.get() === 'Directory' &&
-        typeof file._info.synchronised !== 'undefined' &&
-        file._info.synchronised.get() === true) {
+      } else if (
+          file._info.model_type.get() === 'Synchronized Directory' &&
+          typeof file._info.synchronised !== 'undefined' &&
+          file._info.synchronised.get() === true) {
         const p = path.resolve(folderPath, file.name.get());
         let found = false;
         for (const folder in folderPathInSpinal) {
@@ -236,7 +254,9 @@ export class SpinalFsSync {
     }
   }
 
-  fileSetHasFile(dev: number, ino: number, fileSet: Set<{dev: number, ino: number}>): boolean {
+  fileSetHasFile(
+      dev: number, ino: number,
+      fileSet: Set<{dev: number, ino: number}>): boolean {
     for (const file of fileSet) {
       if (file.dev === dev && file.ino === ino) return true;
     }
@@ -249,10 +269,9 @@ export class SpinalFsSync {
 
     for (const folderPath in filesAndFolders) {
       if (filesAndFolders.hasOwnProperty(folderPath)) {
-        // const element = filesAndFolders[folderPath];
         const dir = await this.getAndCreateFolderWithPath(folderPath);
-        await this.updateFolderFiles(dir, filesAndFolders[folderPath], folderPath, filesAndFolders);
-        // break;
+        await this.updateFolderFiles(
+            dir, filesAndFolders[folderPath], folderPath, filesAndFolders);
       }
     }
   }
