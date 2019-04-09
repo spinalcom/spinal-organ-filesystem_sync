@@ -62,7 +62,7 @@ A organ that act as a FileServer and then duplicate a filesystem to the spinalHu
 ### With pm2
 To start it as a deamon and the auto restart in case of crash and so on...
 ```sh
-~/spinal-organ-filesystem_sync $> pm2 start index.js -- name spinal-organ-filesystem_sync
+~/spinal-organ-filesystem_sync $> pm2 start index.js --name spinal-organ-filesystem_sync
 
 # then to check the state
 $ pm2 list
