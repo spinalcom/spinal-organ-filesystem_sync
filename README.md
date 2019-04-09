@@ -75,6 +75,6 @@ $ pm2 log spinal-organ-filesystem_sync
 
 # 'stop' the process and keep in the list and can restarted with with `pm2 start <id|name>` 
 $ pm2 stop spinal-organ-filesystem_sync
-# or stop then remove form the list
+# or stop then remove from the list of pm2 process
 $ pm2 delete spinal-organ-filesystem_sync
 ```
