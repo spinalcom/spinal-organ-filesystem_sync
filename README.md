@@ -4,7 +4,7 @@ A organ that act as a FileServer and then duplicate a filesystem to the spinalHu
 
 ## Requirements
 
-- [Nodejs JavaScript runtime](https://nodejs.org/en/download/) (use package manager if posible)
+- [Nodejs JavaScript runtime](https://nodejs.org/en/download/)  (use package manager if possible)
 - [PM2](https://github.com/Unitech/pm2) a process manager ( `npm install pm2 -g` )
 
 ## Installation
@@ -64,11 +64,9 @@ A organ that act as a FileServer and then duplicate a filesystem to the spinalHu
 ```
 
 ### With pm2
-
-To start it as a deamon and the auto restart in case of crash and so on...
-
+To start it as a daemon and the auto restart in case of crash and so on...
 ```sh
-~/spinal-organ-filesystem_sync $> pm2 start index.js -- name spinal-organ-filesystem_sync
+~/spinal-organ-filesystem_sync $> pm2 start index.js --name spinal-organ-filesystem_sync
 
 # then to check the state
 $ pm2 list
@@ -81,7 +79,7 @@ $ pm2 log spinal-organ-filesystem_sync
 
 # 'stop' the process and keep in the list and can restarted with with `pm2 start <id|name>`
 $ pm2 stop spinal-organ-filesystem_sync
-# or stop then remove form the list
+# or stop then remove from the list of pm2 process
 $ pm2 delete spinal-organ-filesystem_sync
 ```
 
@@ -89,7 +87,7 @@ $ pm2 delete spinal-organ-filesystem_sync
 
 ## get a file
 
-### route -> `/file/:folder/:file`
+> Route GET -> `/file/:folder/:file`
 
 Where `:folder` and `:file` equals an `encodeURIComponent` of the `httpRootPath` and `httpPath` respectively.
 
@@ -113,7 +111,7 @@ function get_GET_URI_request(fileHttpPathModel) {
 }
 ```
 
-## post `/upload/:file`
+> Route POST -> `/upload/:file`
 
 ```js
 function get_POST_URI_request(
