@@ -1,14 +1,16 @@
 # spinal-organ-filesystem_sync
+
 A organ that act as a FileServer and then duplicate a filesystem to the spinalHub.
 
 ## Requirements
 
-- [Nodejs JavaScript runtime](https://nodejs.org/en/download/)  (use package manager if posible)
+- [Nodejs JavaScript runtime](https://nodejs.org/en/download/) (use package manager if posible)
 - [PM2](https://github.com/Unitech/pm2) a process manager ( `npm install pm2 -g` )
 
 ## Installation
 
-### Clone this repository, Install dependencies and build source 
+### Clone this repository, Install dependencies and build source
+
 ```sh
 # Clone this repository
 ~ $> git clone https://github.com/spinalcom/spinal-organ-filesystem_sync.git
@@ -18,10 +20,11 @@ A organ that act as a FileServer and then duplicate a filesystem to the spinalHu
 # build source
 ~/spinal-organ-filesystem_sync $> npm run build
 ```
+
 ### Edit the configuration file `config.json5`
 
 ```js
-// config.json5 
+// config.json5
 {
   spinalConnector: { // Configuration to connect to the spinalcom' server
     user: 168, // spinalcom user id
@@ -55,12 +58,15 @@ A organ that act as a FileServer and then duplicate a filesystem to the spinalHu
 ## Launch the organ
 
 ### With node
+
 ```sh
 ~/spinal-organ-filesystem_sync $> node index.js
 ```
 
 ### With pm2
+
 To start it as a deamon and the auto restart in case of crash and so on...
+
 ```sh
 ~/spinal-organ-filesystem_sync $> pm2 start index.js -- name spinal-organ-filesystem_sync
 
@@ -73,8 +79,48 @@ $ pm2 log spinal-organ-filesystem_sync
 
 # to stop the organ the log
 
-# 'stop' the process and keep in the list and can restarted with with `pm2 start <id|name>` 
+# 'stop' the process and keep in the list and can restarted with with `pm2 start <id|name>`
 $ pm2 stop spinal-organ-filesystem_sync
 # or stop then remove form the list
 $ pm2 delete spinal-organ-filesystem_sync
+```
+
+## FileServer
+
+## get a file
+
+### route -> `/file/:folder/:file`
+
+Where `:folder` and `:file` equals an `encodeURIComponent` of the `httpRootPath` and `httpPath` respectively.
+
+```js
+// javascript function sample to get the url to get from the model
+function get_GET_URI_request(fileHttpPathModel) {
+  if (fileHttpPathModel._info.model_type.get() !== "HttpPath")
+    return Promsie.reject(new Error("Not an HttpPath"));
+  return new Promise((resolve, reject) => {
+    fileHttpPathModel._ptr.load(httpPath => {
+      if (!httpPath) return reject(new Error("Load Fail"));
+      resolve(
+        httpPath.host.get() +
+          "/file/" +
+          encodeURIComponent(httpPath.httpRootPath.get()) +
+          "/" +
+          encodeURIComponent(httpPath.httpPath.get())
+      );
+    });
+  });
+}
+```
+
+## post `/upload/:file`
+
+```js
+function get_POST_URI_request(
+  DirectorySynchonizedFileModel,
+  stringPathToPushInHub
+) {
+  const host = DirectorySynchonizedFileModel.info.host.get();
+  return host + "/upload/" + encodeURIComponent(stringPathToPushInHub);
+}
 ```
