@@ -85,8 +85,6 @@ $ pm2 delete spinal-organ-filesystem_sync
 
 ## FileServer
 
-## get a file
-
 > Route GET -> `/file/:folder/:file`
 
 Where `:folder` and `:file` equals an `encodeURIComponent` of the `httpRootPath` and `httpPath` respectively.
