@@ -3,7 +3,7 @@ A organ that act as a FileServer and then duplicate a filesystem to the spinalHu
 
 ## Requirements
 
-- [Nodejs JavaScript runtime](https://nodejs.org/en/download/)  (use package manager if posible)
+- [Nodejs JavaScript runtime](https://nodejs.org/en/download/)  (use package manager if possible)
 - [PM2](https://github.com/Unitech/pm2) a process manager ( `npm install pm2 -g` )
 
 ## Installation
