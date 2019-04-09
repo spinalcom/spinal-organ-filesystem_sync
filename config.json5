@@ -1,21 +1,24 @@
 {
-  spinalConnector: {
-    user: 168, // user id - process.env.SPINAL_USER_ID
-    password: "JHGgcz45JKilmzknzelf65ddDadggftIO98P", // user password - process.env.SPINAL_USER_ID 
-    host: "localhost", // can be an ip address - process.env.SPINALHUB_IP
-    port: 7777 // port - process.env.SPINALHUB_PORT
+  spinalConnector: { // Configuration to connect to the spinalcom' server
+    user: 168, // spinalcom user id
+    password: "JHGgcz45JKilmzknzelf65ddDadggftIO98P", // spinalcom user password
+    host: "localhost", // spinalcom' host server address, can be an ip address
+    port: 7777 // spinalcom' server port
   },
-  fsServeServer: {
+  fsServeServer: { // Configuration for the FileServer
+    // listenHost - host/ip to 'listen'
+    // '0.0.0.0' means listen to all,
+    // if you want to restrict it you can put the ip of the client (browser)
     listenHost: '0.0.0.0',
     port: 7789,
     tmpFolder: 'tmp_files'
   },
   path: [{
-    realPath: '.',
-    virtualPath: '/__users__/admin/filesystem_sync/dsadsa',
-    ignore: ['**/node_modules', "**/.*"],
-    fsHostOrigin: "http://localhost:7789"
-  },
+    realPath: '.', // Path to the folder to synchronize to the spinalhub.
+    virtualPath: '/__users__/admin/filesystem_sync/dsadsa', // where to put the synchonized data in the spinalhub virtual filesystem.
+    ignore: ['**/node_modules', "**/.*"], // patern filename to ignore. Here means "node_modules" and everything that start with "."
+    fsHostOrigin: "http://localhost:7789" // how the client can contact the server.replace localhost by the ip that launch this organ.
+  }, // it's an array so it can handle multiple folder to multiple places
   // {
   //   realPath: '../spinal-lib-forgefile',
   //   ignore: ['**/node_modules', "**/.*"],
